@@ -10,7 +10,7 @@ lab <- read_excel("data/200416_lab.xls")
 # CREATING FINAL TABLE ----------------------------------------------------
 
 platf$id <- paste(platf$var,platf$plant, platf$leaf, sep="") # creates id based on var+plant+leaf; no separator
-platfag <- aggregate(platf[, 5:22], list(platf$id), mean) # agreggation / mean based on id
+platfag <- aggregate(platf[, 5:22], list(platf$id), FUN = median) # agreggation / mean based on id
 colnames(platfag)[1] <- "id" #renames the first column
 
 platfag <- platfag %>% 
