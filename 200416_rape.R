@@ -4,13 +4,14 @@ require(tidyverse)
 require(readxl)
 require(reshape2)
 
-platf <- read_excel("data/200416_rape_complete.xlsx")
+#platf <- read_excel("data/200416_rape_complete.xlsx")
+platf <- read_excel("data/200416_rape_outliers_HSV.xlsx")
 lab <- read_excel("data/200416_lab.xls")
 
 # CREATING FINAL TABLE ----------------------------------------------------
 
 platf$id <- paste(platf$var,platf$plant, platf$leaf, sep="") # creates id based on var+plant+leaf; no separator
-platfag <- aggregate(platf[, 5:22], list(platf$id), mean) # agreggation / mean based on id
+platfag <- aggregate(platf[, 5:22], list(platf$id), FUN = median) # agreggation / mean based on id
 colnames(platfag)[1] <- "id" #renames the first column
 
 platfag <- platfag %>% 
@@ -27,6 +28,15 @@ plot(mer$g)
 plot(mer$G)
 plot(mer$nas)
 plot(mer$spadeq)
+
+ggplot(platf, aes(var, spad))+
+  geom_point()
+
+
+platf %>% 
+  group_by(var) %>% 
+  summarise(minspad = min(spad),
+            maxspad = max(spad))
 
 # PLOTS RELATIONS ----------------------------------------------------------------
 
@@ -72,6 +82,23 @@ mer <- mer %>%
 plot(mer$spadeq, mer$chab)
 plot(mer$spadeq, mer$chabcm)
 
+
+# LOGSIG ? ----------------------------------------------------------------
+
+#install.packages("sigmoid")
+require(sigmoid)
+
+mer$rabs <- mer$r*255
+mer$gabs <- mer$g*255
+mer$babs <- mer$b*255
+
+mer <- mer %>% 
+  mutate(logsig = sigmoid((gabs-(rabs/3)-(babs/3))/255))
+
+cor.test(mer$chab, mer$logsig) #0,36
+cor.test(mer$chabcm, mer$logsig) #0,38
+
+
 # CORRELATION -------------------------------------------------------------
 
 corm <- mer %>%  
@@ -82,7 +109,7 @@ install.packages("corrgram")
 require(corrgram)
 
 corm2 <- mer %>%  
-  select(r, g, b, R, G, B, mean_rgb, ExG, ExG_n, nas, chab, chabcm, spadeq)
+  select(r, g, b, R, G, B, mean_rgb, ExG, ExG_n, nas, chab, chabcm, spad, spadeq)
 
 corrgram(corm, lower.panel=panel.conf, upper.panel=NULL)
 corrgram(corm2, lower.panel=panel.conf, upper.panel=NULL)
@@ -112,4 +139,15 @@ platf$id <- paste(platf$var,platf$plant, platf$leaf, sep="")
 ggplot(platf, aes(id, spad))+
              geom_point()
 
-       
+# RMSE --------------------------------------------------------------------
+
+#install.packages("modelr")
+require(modelr)
+
+#rmse(model, data)
+
+m1 <- lm(r ~ chab, data = mer)
+rmse(m1, mer)
+
+m2 <- lm(nas ~ chab, data = mer)
+rmse(m2, mer)
