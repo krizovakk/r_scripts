@@ -14,15 +14,41 @@ wlab <- read_excel("data/200618_lab.xls") #wheat; 18th June 2020; lab results; n
 
 # rape
 
+rplatf <- rplatf %>% 
+  mutate(spadeq = (99*rplatf$spad)/(144-rplatf$spad)) # SPAD value equation -> chlor. content
 rplatf$id <- paste(rplatf$var, rplatf$plant, rplatf$leaf, sep = "")
-rplatfag <- aggregate(rplatf[, 5:38], list(rplatf$id), FUN = median) # 5:39 <-- agg 5th to 39th column
+rplatfag <- aggregate(rplatf[, 1:39], list(rplatf$id), FUN = median) # 5:39 <-- agg 5th to 39th column
 colnames(rplatfag)[1] <- "id"
 rmer <- merge(rplatfag, rlab, by = "id") # merged table for rapeseed, n=90
+rmer <- rmer %>% 
+  select(id, spad, spadeq, everything()) # moves the "spadeq" column to the front 
 
 # wheat
 
+wplatf <- wplatf %>% 
+  mutate(spadeq = (99*wplatf$spad)/(144-wplatf$spad)) # SPAD value equation -> chlor. content
 wplatf$id <- paste(wplatf$var, wplatf$plant, sep = "")
-wplatfag <- aggregate(wplatf[, 4:37], list(wplatf$id), FUN = median)
+wplatfag <- aggregate(wplatf[, 1:38], list(wplatf$id), FUN = median)
 colnames(wplatfag)[1] <- "id"
 wmer <- merge(wplatfag, wlab, by = "id") # merged table for wheat, n=90
+wmer <- wmer %>% 
+  select(id, spad, spadeq, everything()) # moves the "spadeq" column to the front 
+
+# ggplots ------------------------------------------------------------------
+
+#install.packages("Hmisc")
+require(Hmisc)
+
+ggplot(rmer, aes(var, spad))+
+  stat_summary(fun.data = "mean_cl_normal",
+               geom = "errorbar",
+               width = 0.2)+
+  stat_summary(fun.y = "mean", geom = "point", size = 3) # plot showing spad values with errorbars
+
+ggplot(rmer, aes(var, spadeq))+
+  stat_summary(fun.data = "mean_cl_normal",
+               geom = "errorbar",
+               width = 0.2)+
+  stat_summary(fun.y = "mean", geom = "point", size = 3) 
+
 
