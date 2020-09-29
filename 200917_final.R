@@ -34,21 +34,53 @@ wmer <- merge(wplatfag, wlab, by = "id") # merged table for wheat, n=90
 wmer <- wmer %>% 
   select(id, spad, spadeq, everything()) # moves the "spadeq" column to the front 
 
+
+# meaningfull colums ------------------------------------------------------
+
+#install.packages("corrgram")
+require(corrgram)
+
+rcorm <- rmer %>%
+  select(spad, spadeq, r, g, b, R, G, B, mean_rgb, cmin, cmax, c,
+         hue, saturation, brightness, Y, Cb, Cr, GMR, GDR, VI, DGCI, NRI, NGI, ExG, ExG_n, kawa, yuzhu, adam, perez, geor, nas,
+         cha, chb, chab, car, chacm, chbcm, chabcm, carcm)
+
+wcorm <- wmer %>%
+  select(spad, spadeq, r, g, b, R, G, B, mean_rgb, cmin, cmax, c,
+         hue, saturation, brightness, Y, Cb, Cr, GMR, GDR, VI, DGCI, NRI, NGI, ExG, ExG_n, kawa, yuzhu, adam, perez, geor, nas,
+         cha, chb, chab, car, chacm, chbcm, chabcm, carcm)
+
+
+corrgram(rcorm, lower.panel=panel.conf, upper.panel=NULL)
+corrgram(wcorm, lower.panel=panel.conf, upper.panel=NULL)
+
+
 # ggplots ------------------------------------------------------------------
 
 #install.packages("Hmisc")
-require(Hmisc)
+# require(Hmisc)
+# 
+# ggplot(rmer, aes(var, spad))+
+#   stat_summary(fun.data = "mean_cl_normal",
+#                geom = "errorbar",
+#                width = 0.2)+
+#   stat_summary(fun.y = "mean", geom = "point", size = 3) # plot showing spad values with errorbars
+# 
+# ggplot(rmer, aes(var, spadeq))+
+#   stat_summary(fun.data = "mean_cl_normal",
+#                geom = "errorbar",
+#                width = 0.2)+
+#   stat_summary(fun.y = "mean", geom = "point", size = 3) 
+
+rmer$var <- factor(rmer$var)
+wmer$var <- factor(wmer$var)
 
 ggplot(rmer, aes(var, spad))+
-  stat_summary(fun.data = "mean_cl_normal",
-               geom = "errorbar",
-               width = 0.2)+
-  stat_summary(fun.y = "mean", geom = "point", size = 3) # plot showing spad values with errorbars
-
-ggplot(rmer, aes(var, spadeq))+
-  stat_summary(fun.data = "mean_cl_normal",
-               geom = "errorbar",
-               width = 0.2)+
-  stat_summary(fun.y = "mean", geom = "point", size = 3) 
+  geom_boxplot()+
+  labs(x = "treatment", y = "SPAD value")+
+  theme_classic(base_size = 25)
+ggsave("R_spad_var.png", path = "plots", height = 5, width = 13, dpi = 300)
 
 
+ggplot(rmer, aes(spad, hue))+
+  geom_point()
