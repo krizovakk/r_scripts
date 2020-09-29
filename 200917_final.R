@@ -1,5 +1,10 @@
 # base --------------------------------------------------------------------
 
+# install.packages("tidyverse")
+# install.packages("readxl")
+# install.packages("reshape2")
+# install.packages("corrgram")
+
 require(tidyverse)
 require(readxl)
 require(reshape2)
@@ -36,9 +41,6 @@ wmer <- wmer %>%
 
 
 # meaningfull colums ------------------------------------------------------
-
-#install.packages("corrgram")
-require(corrgram)
 
 rcorm <- rmer %>%
   select(spad, spadeq, r, g, b, R, G, B, mean_rgb, cmin, cmax, c,
@@ -83,4 +85,24 @@ ggsave("R_spad_var.png", path = "plots", height = 5, width = 13, dpi = 300)
 
 
 ggplot(rmer, aes(spad, hue))+
-  geom_point()
+  geom_point()+
+  labs(x = "SPAD value", y = "hue")+
+  theme_classic(base_size = 25)
+
+# ggplot - kalibracni krivka, R2 vepsane do grafu
+install.packages("ggpmisc")
+library(ggpmisc)
+
+my.formula <- y ~ x
+ggplot(rmer, aes(NRI, spad))+
+  labs(x = "R/(R+G+B)", y = "SPAD value")+
+  geom_smooth(method=lm, se=FALSE, color = "darkgrey")+
+  stat_poly_eq(formula = my.formula, 
+               aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~")), size = 8, label.x = "right",
+               parse = TRUE)+
+  geom_point(size = 2)+
+  theme_classic(base_size = 25)
+ggsave("SPAD_NRI.png", path = "plots", height = 6, width = 10, dpi = 300)
+
+
+
