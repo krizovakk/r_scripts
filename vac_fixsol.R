@@ -96,42 +96,164 @@ ggsave("penres17.png", device = "png", width = 6, height = 3, dpi = 500)
 pairwise.wilcox.test(p18$d4, p18$var,
                      p.adjust.method = "BH")
 
-# significant difference is where p-value < 0.05
-# diff everywhere except Var 4 & control
-
 pairwise.wilcox.test(p18$d8, p18$var,
                      p.adjust.method = "BH")
 
-pairwise.wilcox.test(p15$cm12, p15$var,
+pairwise.wilcox.test(p18$d12, p18$var,
                      p.adjust.method = "BH")
 
-pairwise.wilcox.test(p15$cm16, p15$var,
+pairwise.wilcox.test(p18$d16, p18$var,
                      p.adjust.method = "BH")
 
-pairwise.wilcox.test(p15$cm20, p15$var,
+pairwise.wilcox.test(p18$d20, p18$var,
                      p.adjust.method = "BH")
 
-#2017
+# significant difference is where p-value < 0.05
+# diff everywhere except Var 4 & control
 
-  pairwise.wilcox.test(p17$cm4, p17$var,
-                       p.adjust.method = "BH")
-  
-  pairwise.wilcox.test(p17$cm8, p17$var,
-                       p.adjust.method = "BH")
-  
-  pairwise.wilcox.test(p17$cm12, p17$var,
-                       p.adjust.method = "BH")
-  
-  pairwise.wilcox.test(p17$cm16, p17$var,
-                       p.adjust.method = "BH")
-  
-  pairwise.wilcox.test(p17$cm20, p17$var,
-                       p.adjust.method = "BH")
+#2019
+
+pairwise.wilcox.test(p19$d4, p19$var,
+                     p.adjust.method = "BH")
+
+pairwise.wilcox.test(p19$d8, p19$var,
+                     p.adjust.method = "BH")
+
+pairwise.wilcox.test(p19$d12, p19$var,
+                     p.adjust.method = "BH")
+
+pairwise.wilcox.test(p19$d16, p19$var,
+                     p.adjust.method = "BH")
+
+pairwise.wilcox.test(p19$d20, p19$var,
+                     p.adjust.method = "BH")
+
+# KFS ------------------------------------------------------------
+
+kfs <- read_excel("data/vuchs20.xlsx", sheet = 3)
+
+kfs$var[kfs$var == 1001] <- "hnSOL"
+kfs$var[kfs$var == 1002] <- "hnFIXSOL"
+kfs$var[kfs$var == 1006] <- "hn"
+kfs$var[kfs$var == 1007] <- "hnFIX"
+kfs$var[kfs$var == 1011] <- "NPK"
+
+kfs$var <- factor(kfs$var, levels = c("NPK", "hn", "hnFIX", "hnSOL", "hnFIXSOL"))
+
+# kfs explorative ---------------------------------------------------------
+
+ggplot(kfs, aes(var, kfs))+
+  geom_bar(aes(width = 0.5),stat = "summary", fun.y = "mean")+
+  scale_fill_manual(values=c("darkgrey"))+
+  labs(y = expression("hydraulická vodivost [ mm."~ h^-1~"]"), 
+       x = "", fill = "", title = "")+
+  theme_classic(base_size = 15)
+ggsave("kfs_both.png", path = "plots", device = "png", width = 8, height = 4, dpi = 500)
+
+# kfs analysis ------------------------------------------------------------
+
+pairwise.wilcox.test(kfs$kfs, kfs$var,
+                     p.adjust.method = "BH")
+# significant difference is where p-value < 0.05
+# diff everywhere except Var 4 & control
+
+# RBD ---------------------------------------------------------------------
+
+rbd <- read_excel("data/vuchs20.xlsx", sheet = 2)
+
+rbd$var[rbd$var == 1001] <- "hnSOL"
+rbd$var[rbd$var == 1002] <- "hnFIXSOL"
+rbd$var[rbd$var == 1006] <- "hn"
+rbd$var[rbd$var == 1007] <- "hnFIX"
+rbd$var[rbd$var == 1011] <- "NPK"
+
+rbd$var <- factor(rbd$var, levels = c("NPK", "hn", "hnFIX", "hnSOL", "hnFIXSOL"))
+
+rbd18 <- rbd %>% 
+  filter(year == 2018)
+
+rbd19 <- rbd %>% 
+  filter(year == 2019)
+
+# uprava tabulky pro analyzu var~year
+
+hnSOL <- rbd %>% 
+  filter(var == "hnSOL")
+
+hnFIXSOL <- rbd %>% 
+  filter(var == "hnFIXSOL")
+
+hn <- rbd %>% 
+  filter(var == "hn")
+
+hnFIX <- rbd %>% 
+  filter(var == "hnFIX")
+
+NPK <- rbd %>% 
+  filter(var == "NPK")
+
+# rbd analysis ------------------------------------------------------------
+
+pairwise.wilcox.test(rbd18$roh, rbd18$var,
+                     p.adjust.method = "BH")
+
+pairwise.wilcox.test(rbd19$roh, rbd18$var,
+                     p.adjust.method = "BH")
+# varianty mezirocne
+
+pairwise.wilcox.test(hnSOL$roh, hnSOL$year,
+                     p.adjust.method = "BH")
+
+pairwise.wilcox.test(hnFIXSOL$roh, hnFIXSOL$year,
+                     p.adjust.method = "BH")
+
+pairwise.wilcox.test(hn$roh, hn$year,
+                     p.adjust.method = "BH")
+
+pairwise.wilcox.test(hnFIX$roh, hnFIX$year,
+                     p.adjust.method = "BH")
+
+pairwise.wilcox.test(NPK$roh, NPK$year,
+                     p.adjust.method = "BH")
+
+# rbd <- rbd %>% 
+#   melt(id.vars = c("var"), variable.name = ("year"), value.name = "rbd")
+
+rbd$year <- as.factor(rbd$year)
+
+ggplot(rbd, aes(var, roh, fill = year))+
+  geom_bar(aes(width = 0.5), stat="identity", position=position_dodge())+
+  scale_fill_manual(values=c("darkgrey","grey30"))+
+  labs(y = expression("objemová hmotnost [ g."~cm^-3~"]"), x = "", fill = "")+
+  theme(legend.title=element_blank())+
+  theme_classic(base_size = 15)
+ggsave("rbd_bothyears.png", path = "plots", device = "png", width = 8, height = 4, dpi = 500)
+
+# VUCHS NEPOCITA METEO -------------------------------------------------------------------
+
+met <- read_excel("data/meteo.xlsx")
+colnames(met) [1] <- "month"
+
+met$month <- factor(met$month, levels = c("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"))
+
+met <- met %>% 
+  melt(id.vars = c("month"), variable.name = ("year"), value.name = "rain")
+
+ggplot(met, aes(month, rain, fill=year))+
+  geom_bar(stat="identity", position=position_dodge())+
+  scale_fill_manual(values=c("grey90", "grey70", "grey50", "grey1"), 
+                    name = "", 
+                    labels = c("2015", "2016", "2017", 
+                               "longterm normal (1981-2010)"))+
+  labs(y = "Sum of Precipitation [mm]", x = "", fill = "")+
+  theme_minimal()+
+  theme(legend.position="top")
+ggsave("meteo.png", device = "png", width = 6, height = 4, dpi = 500)
 
 # VUCHS NEPOCITA UNITD -------------------------------------------------------------------
 
 uni <- read_excel("data/unitd.xlsx")
-  
+
 uni$var[uni$var == 7] <- "ZF"
 uni$var[uni$var == 8] <- "ZF_SOL"
 uni$var[uni$var == 9] <- "C"
@@ -237,129 +359,3 @@ pairwise.wilcox.test(u15$unitd, u15$var,
 
 pairwise.wilcox.test(u17$unitd, u17$var,
                      p.adjust.method = "BH")
-
-# INFILTRATION ------------------------------------------------------------
-
-inf <- read_excel("data/inf.xlsx")
-
-inf$var[inf$var == 7] <- "ZF"
-inf$var[inf$var == 8] <- "ZF_SOL"
-inf$var[inf$var == 9] <- "C"
-inf$var[inf$var == 10] <- "SOL"
-
-infl <- inf %>% 
-  select(seas, var, inf)
-
-i15 <- inf %>% 
-  filter(seas == 2015)
-
-i17 <- inf %>% 
-  filter(seas == 2017)
-
-i15l <- i15 %>% 
-  select(var, inf)
-
-i17l <- i17 %>% 
-  select(var, inf)
-
-# inf explorative ---------------------------------------------------------
-
-# both years
-
-ggplot(infl, aes(var, inf, fill = seas))+
-  geom_bar(aes(width = 0.5),stat = "summary", fun.y = "mean",
-           position = position_dodge())+
-  scale_fill_manual(values=c("darkgrey", "grey30"))+
-  labs(y = expression("Saturated Hydraulic Conductivity [ mm"~ h^-1~"]"), 
-       x = "", fill = "", title = "")+
-  theme_minimal()
-ggsave("inf_both.png", device = "png", width = 6, height = 3, dpi = 500)
-
-#separate
-
-ggplot(i15l, aes(var, inf))+
-  geom_bar(aes(width = 0.5),stat = "summary", fun.y = "mean")+
-  labs(y = expression("Saturated Hydraulic Conductivity [ mm"~ h^-1~"]"), 
-       x = "", fill = "", title = "2015")+
-  theme_minimal()
-ggsave("inf15.png", device = "png", width = 6, height = 4, dpi = 500)
-
-ggplot(i17l, aes(var, inf))+
-  geom_bar(aes(width = 0.5),stat = "summary", fun.y = "mean")+
-  labs(y = expression("Saturated Hydraulic Conductivity [ mm"~ h^-1~"]"),
-       x = "", fill = "", title = "2017")+
-  theme_minimal()
-ggsave("inf17.png", device = "png", width = 6, height = 4, dpi = 500)
-
-# inf analysis ------------------------------------------------------------
-
-pairwise.wilcox.test(i15$inf, i15$var,
-                     p.adjust.method = "BH")
-# significant difference is where p-value < 0.05
-# diff everywhere except Var 4 & control
-
-pairwise.wilcox.test(i17$inf, i17$var,
-                     p.adjust.method = "BH")
-
-
-
-# RBD ---------------------------------------------------------------------
-
-rbd <- read_excel("data/vuchs20.xlsx", sheet = 2)
-
-rbd$var[rbd$var == 1001] <- "hnSOL"
-rbd$var[rbd$var == 1002] <- "hnFIXSOL"
-rbd$var[rbd$var == 1006] <- "hn"
-rbd$var[rbd$var == 1007] <- "hnFIX"
-rbd$var[rbd$var == 1011] <- "NPK"
-
-rbd$var <- factor(rbd$var, levels = c("NPK", "hn", "hnFIX", "hnSOL", "hnFIXSOL"))
-
-# rbd <- rbd %>% 
-#   melt(id.vars = c("var"), variable.name = ("year"), value.name = "rbd")
-
-rbd$year <- as.factor(rbd$year)
-
-ggplot(rbd, aes(var, roh, fill = year))+
-  geom_bar(aes(width = 0.5), stat="identity", position=position_dodge())+
-  scale_fill_manual(values=c("darkgrey","grey30"))+
-  labs(y = expression("objemová hmotnost [ g."~cm^-3~"]"), x = "", fill = "")+
-  theme(legend.title=element_blank())+
-  theme_classic(base_size = 15)
-ggsave("rbd_bothyears.png", path = "plots", device = "png", width = 8, height = 4, dpi = 500)
-
-# hraju si s grafem, aby byl vyraznejsi
-
-ggplot(rbd, aes(var, rbd, fill = year))+
-  geom_bar(aes(width = 0.5), stat="identity", position=position_dodge())+
-  scale_fill_manual(values=c("darkgrey","grey30"))+
-  labs(y = expression("Reduced Bulk Density [ g"~ cm^-3~"]"), x = "", fill = "")+
-  coord_cartesian(ylim = c(1, 1.30))+
-  theme(legend.title=element_blank())+
-  theme_minimal()
-ggsave("rbd_bothyears_ylim.png", device = "png", width = 6, height = 3, dpi = 500)
-
---
-  geom_bar(aes(width = 0.5),stat = "summary", fun.y = "mean",
-           position = position_dodge())
-  
-# VUCHS NEPOCITA METEO -------------------------------------------------------------------
-
-met <- read_excel("data/meteo.xlsx")
-colnames(met) [1] <- "month"
-
-met$month <- factor(met$month, levels = c("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"))
-
-met <- met %>% 
-  melt(id.vars = c("month"), variable.name = ("year"), value.name = "rain")
-
-ggplot(met, aes(month, rain, fill=year))+
-  geom_bar(stat="identity", position=position_dodge())+
-  scale_fill_manual(values=c("grey90", "grey70", "grey50", "grey1"), 
-                    name = "", 
-                    labels = c("2015", "2016", "2017", 
-                               "longterm normal (1981-2010)"))+
-  labs(y = "Sum of Precipitation [mm]", x = "", fill = "")+
-  theme_minimal()+
-  theme(legend.position="top")
-ggsave("meteo.png", device = "png", width = 6, height = 4, dpi = 500)
