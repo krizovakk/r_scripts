@@ -229,25 +229,27 @@ ggplot(rbd, aes(var, roh, fill = year))+
   theme_classic(base_size = 15)
 ggsave("rbd_bothyears.png", path = "plots", device = "png", width = 8, height = 4, dpi = 500)
 
-# VUCHS NEPOCITA METEO -------------------------------------------------------------------
+# METEO -------------------------------------------------------------------
 
 met <- read_excel("data/meteo.xlsx")
+
 colnames(met) [1] <- "month"
 
-met$month <- factor(met$month, levels = c("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"))
+met$month <- factor(met$month, levels = c("leden", "únor", "bøezen", "duben", "kvìten", "èerven", 
+                                          "èervenec", "srpen", "záøí", "øíjen", "listopad", "prosinec"))
 
 met <- met %>% 
   melt(id.vars = c("month"), variable.name = ("year"), value.name = "rain")
 
 ggplot(met, aes(month, rain, fill=year))+
   geom_bar(stat="identity", position=position_dodge())+
-  scale_fill_manual(values=c("grey90", "grey70", "grey50", "grey1"), 
+  scale_fill_manual(values=c("grey80", "grey55", "grey25"), 
                     name = "", 
-                    labels = c("2015", "2016", "2017", 
-                               "longterm normal (1981-2010)"))+
-  labs(y = "Sum of Precipitation [mm]", x = "", fill = "")+
-  theme_minimal()+
-  theme(legend.position="top")
+                    labels = c("2018", "2019", "normál 1981–2010"))+
+  labs(y = "Mìsíèní srážkový úhrn [mm]", x = "", fill = "")+
+  theme_classic(base_size = 15)+
+  theme(legend.position="top", 
+        axis.text.x = element_text(angle = 45, hjust = 0.5, vjust = 0.5)) #vjust, hjust -> adjust the text to the tickmark [0:1]
 ggsave("meteo.png", device = "png", width = 6, height = 4, dpi = 500)
 
 # VUCHS NEPOCITA UNITD -------------------------------------------------------------------
