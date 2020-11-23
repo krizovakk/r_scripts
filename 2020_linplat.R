@@ -225,7 +225,7 @@ linplat = function(x, a, b, clx) # fixed, Define linear plateau function
 {ifelse(x < clx, a + b * x,
         a + b * clx)}
 
-model = nls(top ~ linplat(dose, a, b, clx), # Find best fit parameters
+model_topnpk = nls(top ~ linplat(dose, a, b, clx), # Find best fit parameters
             data = top_npk,
             start = list(a   = a.ini,
                          b   = b.ini,
@@ -233,20 +233,27 @@ model = nls(top ~ linplat(dose, a, b, clx), # Find best fit parameters
             trace = FALSE,
             nls.control(maxiter = 1000))
 
-summary(model)
+summary(model_topnpk)
 
-par(oma = c(1,0,0,0))
+# par(oma = c(1,0,0,0))
 plotPredy(data  = top_npk,
           x     = dose,
           y     = top,
-          model = model,
+          model = model_topnpk,
           main  = "NPK",
-          xlab  = "", #N dose [kg.ha-1]
+          xlab  = "N dose [kg.ha-1]",
           ylab  = "top yield [t.ha-1]",
-          xaxt  = "n")
+          xaxt  = "n",
+          cex   = 1.3,
+          cex.lab=1.3, 
+          cex.axis=1.2, 
+          cex.main=1.3)
 # axis(1, at = seq(0, 220, by = 10), las=2)
-axis(1, at = top_npk$dose, labels = top_npk$n, las = 2)
-text(35,33, "y = 17.4037+0.0639(x-122.2971)", col = "blue", cex=0.9)
+axis(1, at = top_npk$dose, labels = top_npk$dose, 
+     las = 1, cex.axis = 1.1)
+#text(40,33, "y = 17.4037+0.0639(x-122.2971)", col = "blue", cex=0.9)
+mtext("y = 17.4037+0.0639(x-122.2971)", side = 3, line = 0,
+      outer = FALSE, cex = 1, col = "blue")
 
 ## TOP FYM /// TO BE SOLVED LATER
 
@@ -260,7 +267,7 @@ linplat = function(x, a, b, clx) # fixed, Define linear plateau function
 {ifelse(x < clx, a + b * x,
         a + b * clx)}
 
-model = nls(top ~ linplat(dose, a, b, clx), # Find best fit parameters
+model_topfym = nls(top ~ linplat(dose, a, b, clx), # Find best fit parameters
             data = top_fym,
             # start = list(a   = a.ini,
             #              b   = b.ini,
@@ -269,12 +276,12 @@ model = nls(top ~ linplat(dose, a, b, clx), # Find best fit parameters
             trace = FALSE,
             nls.control(maxiter = 1000))
 
-summary(model)
+summary(model_topfym)
 
 plotPredy(data  = top_fym,
           x     = dose,
           y     = top,
-          model = model,
+          model = model_topfym,
           xlab  = "FYM / N dose [kg.ha-1]",
           ylab  = "top yield [t.ha-1]")
 
@@ -290,7 +297,7 @@ linplat = function(x, a, b, clx) # fixed, Define linear plateau function
 {ifelse(x < clx, a + b * x,
         a + b * clx)}
 
-model = nls(tuber ~ linplat(dose, a, b, clx), # Find best fit parameters
+model_tubefym = nls(tuber ~ linplat(dose, a, b, clx), # Find best fit parameters
             data = tube_fym,
             start = list(a   = a.ini,
                          b   = b.ini,
@@ -298,19 +305,26 @@ model = nls(tuber ~ linplat(dose, a, b, clx), # Find best fit parameters
             trace = FALSE,
             nls.control(maxiter = 1000))
 
-summary(model)
+summary(model_tubefym)
 
-par(oma = c(3,0,0,0))
+# par(oma = c(3,0,0,0))
 plotPredy(data  = tube_fym,
           x     = dose,
           y     = tuber,
-          model = model,
+          model = model_tubefym,
           main  = "FYM",
-          xlab  = "", #N dose [kg.ha-1]
+          xlab  = "N dose [kg.ha-1]",
           ylab  = "tuber yield [t.ha-1]",
-          xaxt  = "n")
-axis(1, at = tube_fym$dose, labels = tube_fym$n, las = 2)
-text(105,50, "y = 52.9120+0.0789(x-165.4596)", col = "blue", cex=0.9)
+          xaxt  = "n", 
+          cex   = 1.3,
+          cex.lab=1.3, 
+          cex.axis=1.2, 
+          cex.main=1.3)
+axis(1, at = tube_fym$dose, labels = tube_fym$dose, 
+     las = 1, cex.axis = 1.1)
+# text(105,50, "y = 52.9120+0.0789(x-165.4596)", col = "blue", cex=0.9)
+mtext("y = 52.9120+0.0789(x-165.4596)", side = 3, line = 0,
+      outer = FALSE, cex = 1, col = "blue")
 
 ## TUBE NPK / done
 
@@ -324,7 +338,7 @@ linplat = function(x, a, b, clx) # fixed, Define linear plateau function
 {ifelse(x < clx, a + b * x,
         a + b * clx)}
 
-model = nls(tuber ~ linplat(dose, a, b, clx), # Find best fit parameters
+model_tubenpk = nls(tuber ~ linplat(dose, a, b, clx), # Find best fit parameters
             data = tube_npk,
             start = list(a   = a.ini,
                          b   = b.ini,
@@ -332,21 +346,28 @@ model = nls(tuber ~ linplat(dose, a, b, clx), # Find best fit parameters
             trace = FALSE,
             nls.control(maxiter = 1000))
 
-summary(model)
+summary(model_tubenpk)
 
 # par(mar = c(6,0,0,0))
-par(oma = c(1,0,0,0))
+# par(oma = c(1,0,0,0))
 plotPredy(data  = tube_npk,
           x     = dose,
           y     = tuber,
-          model = model,
+          model = model_tubenpk,
           main  = "NPK",
-          xlab  = "ble", #N dose [kg.ha-1]
+          xlab  = "N dose [kg.ha-1]", 
           ylab  = "tuber yield [t.ha-1]",
-          xaxt  = "n")
-axis(1, at = tube_npk$dose, labels = tube_npk$n, las = 2)
-text(140,55, "y = 52.9120+0.1046(x-111.5920)", col = "blue", cex=0.9)
-  
+          xaxt  = "n",
+          cex   = 1.3,
+          cex.lab=1.3, 
+          cex.axis=1.2, 
+          cex.main=1.3)
+axis(1, at = tube_npk$dose, labels = tube_npk$dose, 
+     las = 1, cex.axis = 1.1)
+# text(140,55, "y = 52.9120+0.1046(x-111.5920)", col = "blue", cex=0.9)
+mtext("y = 52.9120+0.1046(x-111.5920)", side = 3, line = 0,
+      outer = FALSE, cex = 1, col = "blue")
+ 
 # TOPFYM issue ------------------------------------------------------------
 
 install.packages("FertBoot")
